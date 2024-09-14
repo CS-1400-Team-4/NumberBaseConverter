@@ -1,66 +1,102 @@
-function Convert-Number {
-    param (
-        [string]$inputValue,
-        [string]$fromBase,
-        [string]$toBase
-    )
-    
-    switch ($fromBase) {
-        "decimal" { $number = [int]$inputValue }
-        "binary" { $number = [Convert]::ToInt32($inputValue, 2) }
-        "hexadecimal" { $number = [Convert]::ToInt32($inputValue, 16) }
-    }
-    
-    switch ($toBase) {
-        "decimal" { return $number.ToString() }
-        "binary" { return [Convert]::ToString($number, 2) }
-        "hexadecimal" { return "0x" + [Convert]::ToString($number, 16).ToUpper() }
-    }
-}
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
 
-function Perform-Calculation {
+function Convert-NumberBase {
     param (
-        [int]$num1,
-        [int]$num2,
-        [string]$operation
+        [string]$InputValue,
+        [string]$InputBase,
+        [string]$OutputBase
     )
-    
-    switch ($operation) {
-        "add" { return $num1 + $num2 }
-        "subtract" { return $num1 - $num2 }
-        "multiply" { return $num1 * $num2 }
-        "divide" { 
-            if ($num2 -eq 0) {
-                return "Error: Division by zero"
-            }
-            return $num1 / $num2 
+
+    try {
+        # Convert input to decimal
+        switch ($InputBase) {
+            "Binary" { $decimal = [Convert]::ToInt64($InputValue, 2) }
+            "Decimal" { $decimal = [int64]$InputValue }
+            "Hexadecimal" { $decimal = [Convert]::ToInt64($InputValue, 16) }
+        }
+
+        # Convert decimal to desired output
+        switch ($OutputBase) {
+            "Binary" { return [Convert]::ToString($decimal, 2) }
+            "Decimal" { return $decimal.ToString() }
+            "Hexadecimal" { return "0x" + [Convert]::ToString($decimal, 16).ToUpper() }
         }
     }
+    catch {
+        return "Error: Invalid input or conversion"
+    }
 }
 
-# Main program
-do {
-    $inputValue = Read-Host "Enter a decimal, binary, or hexadecimal value"
-    $inputBase = Read-Host "Enter the base of the input value (decimal, binary, or hexadecimal)"
+# Create the form
+$form = New-Object System.Windows.Forms.Form
+$form.Text = "Number Base Converter"
+$form.Size = New-Object System.Drawing.Size(400,300)
+$form.StartPosition = "CenterScreen"
 
-    $action = Read-Host "Do you want to convert or calculate? (convert/calculate)"
+# Input value
+$inputLabel = New-Object System.Windows.Forms.Label
+$inputLabel.Location = New-Object System.Drawing.Point(10,20)
+$inputLabel.Size = New-Object System.Drawing.Size(280,20)
+$inputLabel.Text = "Enter a number (binary, decimal, or hexadecimal):"
+$form.Controls.Add($inputLabel)
 
-    if ($action -eq "convert") {
-        $toBase = Read-Host "Enter the base to convert to (decimal, binary, or hexadecimal)"
-        $result = Convert-Number -inputValue $inputValue -fromBase $inputBase -toBase $toBase
-        Write-Host "Result: $result"
-    }
-    elseif ($action -eq "calculate") {
-        $operation = Read-Host "Enter the operation (add, subtract, multiply, divide)"
-        $secondValue = Read-Host "Enter the second value (in decimal)"
-        
-        $num1 = Convert-Number -inputValue $inputValue -fromBase $inputBase -toBase "decimal"
-        $result = Perform-Calculation -num1 ([int]$num1) -num2 ([int]$secondValue) -operation $operation
-        Write-Host "Result: $result"
-    }
-    else {
-        Write-Host "Invalid action. Please choose 'convert' or 'calculate'."
-    }
+$inputBox = New-Object System.Windows.Forms.TextBox
+$inputBox.Location = New-Object System.Drawing.Point(10,40)
+$inputBox.Size = New-Object System.Drawing.Size(260,20)
+$form.Controls.Add($inputBox)
 
-    $continue = Read-Host "Do you want to perform another operation? (yes/no)"
-} while ($continue -eq "yes")
+# Input base
+$inputBaseLabel = New-Object System.Windows.Forms.Label
+$inputBaseLabel.Location = New-Object System.Drawing.Point(10,70)
+$inputBaseLabel.Size = New-Object System.Drawing.Size(280,20)
+$inputBaseLabel.Text = "Select input base:"
+$form.Controls.Add($inputBaseLabel)
+
+$inputBaseComboBox = New-Object System.Windows.Forms.ComboBox
+$inputBaseComboBox.Location = New-Object System.Drawing.Point(10,90)
+$inputBaseComboBox.Size = New-Object System.Drawing.Size(260,20)
+$inputBaseComboBox.Items.AddRange(@("Binary", "Decimal", "Hexadecimal"))
+$form.Controls.Add($inputBaseComboBox)
+
+# Output base
+$outputBaseLabel = New-Object System.Windows.Forms.Label
+$outputBaseLabel.Location = New-Object System.Drawing.Point(10,120)
+$outputBaseLabel.Size = New-Object System.Drawing.Size(280,20)
+$outputBaseLabel.Text = "Select output base:"
+$form.Controls.Add($outputBaseLabel)
+
+$outputBaseComboBox = New-Object System.Windows.Forms.ComboBox
+$outputBaseComboBox.Location = New-Object System.Drawing.Point(10,140)
+$outputBaseComboBox.Size = New-Object System.Drawing.Size(260,20)
+$outputBaseComboBox.Items.AddRange(@("Binary", "Decimal", "Hexadecimal"))
+$form.Controls.Add($outputBaseComboBox)
+
+# Convert button
+$convertButton = New-Object System.Windows.Forms.Button
+$convertButton.Location = New-Object System.Drawing.Point(10,170)
+$convertButton.Size = New-Object System.Drawing.Size(75,23)
+$convertButton.Text = "Convert"
+$form.Controls.Add($convertButton)
+
+# Result
+$resultLabel = New-Object System.Windows.Forms.Label
+$resultLabel.Location = New-Object System.Drawing.Point(10,200)
+$resultLabel.Size = New-Object System.Drawing.Size(280,20)
+$resultLabel.Text = "Result:"
+$form.Controls.Add($resultLabel)
+
+$resultBox = New-Object System.Windows.Forms.TextBox
+$resultBox.Location = New-Object System.Drawing.Point(10,220)
+$resultBox.Size = New-Object System.Drawing.Size(260,20)
+$resultBox.ReadOnly = $true
+$form.Controls.Add($resultBox)
+
+# Convert button click event
+$convertButton.Add_Click({
+    $result = Convert-NumberBase -InputValue $inputBox.Text -InputBase $inputBaseComboBox.SelectedItem -OutputBase $outputBaseComboBox.SelectedItem
+    $resultBox.Text = $result
+})
+
+# Show the form
+$form.ShowDialog()
