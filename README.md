@@ -51,10 +51,13 @@ To convert the decimal number 42 to binary:
 
 ## Screenshot examples
 Decimal to Binary
+
 ![image](https://github.com/user-attachments/assets/fb0cbff8-9558-422e-a890-08e618ddc9b3)
 Binary to Decimal
+
 ![image](https://github.com/user-attachments/assets/87eb9555-5fb6-4792-88e9-affd6d268c47)
 Hexadecimal to Decimal
+
 ![image](https://github.com/user-attachments/assets/30d9f300-0235-4f00-a639-214a15a27c42)
 
 ## Contributing
