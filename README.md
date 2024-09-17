@@ -49,6 +49,11 @@ To convert the decimal number 42 to binary:
 4. Click "Convert".
 5. The result "101010" will appear in the result box.
 
+## Screenshots
+Dec > Bin ![image](https://github.com/user-attachments/assets/fb0cbff8-9558-422e-a890-08e618ddc9b3)
+Bin > Dec![image](https://github.com/user-attachments/assets/87eb9555-5fb6-4792-88e9-affd6d268c47)
+Hex > Dec ![image](https://github.com/user-attachments/assets/30d9f300-0235-4f00-a639-214a15a27c42)
+
 ## Contributing
 
 Contributions to improve the script or extend its functionality are welcome. Please feel free to fork the repository and submit pull requests.
